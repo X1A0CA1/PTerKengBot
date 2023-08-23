@@ -1,9 +1,11 @@
 from datetime import datetime
 
+import log
+from utils import edit_and_delay_delete
+from config import INFO_DELETE_TIME
+
 from pyrogram.raw.functions import Ping
 from pyrogram import Client, filters
-
-from utils import edit_and_delay_delete
 
 
 @Client.on_message(filters.command('ping'))
@@ -19,5 +21,6 @@ async def ping_message(bot, message):
     await edit_and_delay_delete(
         message,
         f"Poi~ | 服务器延迟: {ping_duration}ms | 消息延迟: {msg_duration}ms",
-        10
+        INFO_DELETE_TIME
     )
+    await log.command_log(message, "RAN_COMMAND_PING", "执行了命令 ping")

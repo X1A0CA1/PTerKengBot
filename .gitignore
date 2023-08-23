@@ -3,4 +3,5 @@ config.py
 *.session-journal
 
 __pycache__/
+/venv/
 .idea/

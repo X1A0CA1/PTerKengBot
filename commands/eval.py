@@ -57,9 +57,8 @@ async def python_eval(_, message):
     except IndexError:
         return
     final_output = await run_eval(cmd, message)
-    await log.cmd_eval_log(message, cmd, final_output)
-
     await delay_delete(
         await reply_message_with_length_check(message, final_output),
         30
     )
+    return await log.cmd_eval_log(message, cmd, final_output)

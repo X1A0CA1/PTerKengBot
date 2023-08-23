@@ -99,7 +99,7 @@ def _length_check(text: str) -> bool:
     return len(text) <= 4000
 
 
-async def send_message_with_length_check(chat_id, text, log_type) -> Message:
+async def send_message_with_length_check(chat_id, text, log_type, log_summaries=None) -> Message:
     if _length_check(text):
         message = await bot.send_message(chat_id, text, disable_web_page_preview=True)
     else:
@@ -109,7 +109,7 @@ async def send_message_with_length_check(chat_id, text, log_type) -> Message:
         message = await bot.send_document(
             chat_id=chat_id,
             document=file_path,
-            caption=f"#{log_type}\n消息过长，已经发送为文件"
+            caption=f"#{log_type}\n\n摘要：{log_summaries}\n但消息过长，已经发送为文件"
         )
         os.remove(file_path)
     return message

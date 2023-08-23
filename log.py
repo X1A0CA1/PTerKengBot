@@ -21,15 +21,6 @@ def setup_logger():
     return _logger
 
 
-async def log_messages(log_type, log_message_content, log_function):
-    log_message = (
-        f"#{log_type}\n\n"
-        f"{log_message_content}"
-    )
-    await send_message_with_length_check(LOG_CHAT, log_message, log_type)
-    log_function(log_message)
-
-
 async def _log_command_execution(message, log_type, cmd, result):
     if message.from_user:
         full_name = await get_user_fullname_from_message(message)
@@ -43,18 +34,19 @@ async def _log_command_execution(message, log_type, cmd, result):
             message, cmd, result
         )
 
+    log_message_summaries = f"用户 **{full_name}**；(`{user_id}`) 执行了命令：\n"
     log_message = (
         f"#{log_type}\n\n"
-        f"用户 **{full_name}**；(`{user_id}`) 执行了命令：\n"
-        f"`{cmd}`\n"
+        f"{log_message_summaries}"
+        f"`{cmd}`\n\n"
         f"结果为：\n"
         f"{result}"
     )
-    await send_message_with_length_check(LOG_CHAT, log_message, log_type)
+    await send_message_with_length_check(LOG_CHAT, log_message, log_type, log_message_summaries)
     logger.info(log_message)
 
 
-async def _log_action(message, log_type, log_message_prefix):
+async def _log_user_action(message, log_type, log_message_prefix):
     if message.from_user:
         full_name = await get_user_fullname_from_message(message)
         user_id = message.from_user.id
@@ -66,14 +58,24 @@ async def _log_action(message, log_type, log_message_prefix):
             f"用户 {log_message_prefix}。但无法获取用户信息，原始消息：\n{message}\n",
             message
         )
-
+    log_message_summaries = f"用户 **{full_name}**；(`{user_id}`) {log_message_prefix}：\n"
     log_message = (
         f"#{log_type}\n\n"
-        f"用户 **{full_name}**；(`{user_id}`) {log_message_prefix}：\n"
+        f"{log_message_summaries}"
         f"{message.text}"
     )
-    await send_message_with_length_check(LOG_CHAT, log_message, log_type)
+
+    await send_message_with_length_check(LOG_CHAT, log_message, log_type, log_message_summaries)
     logger.info(log_message)
+
+
+async def _log_messages(log_type, log_message_content, log_function):
+    log_message = (
+        f"#{log_type}\n\n"
+        f"{log_message_content}"
+    )
+    await send_message_with_length_check(LOG_CHAT, log_message, log_type)
+    log_function(log_message)
 
 
 async def cmd_eval_log(message, cmd, result):
@@ -81,27 +83,31 @@ async def cmd_eval_log(message, cmd, result):
 
 
 async def not_work_group_log(message):
-    await _log_action(message, "not_work_group_log", "在非工作群组执行了命令")
+    await _log_user_action(message, "not_work_group_log", "在非工作群组执行了命令")
 
 
 async def no_permission_log(message):
-    await log_messages(message, "no_permission_log", "没有权限执行命令")
+    await _log_user_action(message, "no_permission_log", "没有权限执行命令")
+
+
+async def command_log(message, log_type, log_message_prefix):
+    await _log_user_action(message, log_type, log_message_prefix)
 
 
 async def debug(debug_message, log_type="error"):
-    await log_messages(log_type, debug_message, logger.info)
+    await _log_messages(log_type, debug_message, logger.info)
 
 
 async def info(info_message, log_type="error"):
-    await log_messages(log_type, info_message, logger.info)
+    await _log_messages(log_type, info_message, logger.info)
 
 
 async def warning(warning_message, log_type="error"):
-    await log_messages(log_type, warning_message, logger.warning)
+    await _log_messages(log_type, warning_message, logger.warning)
 
 
 async def error(error_message, log_type="error"):
-    await log_messages(log_type, error_message, logger.error)
+    await _log_messages(log_type, error_message, logger.error)
 
 
 logger = setup_logger()

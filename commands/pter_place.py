@@ -17,22 +17,22 @@ PTER_PLACE = []
 MESSAGE_TO_BE_DELETED = []
 
 
-async def clean_pter_place():
+async def _clean_pter_place():
     global PTER_PLACE
     if len(PTER_PLACE) > 20:
         PTER_PLACE = PTER_PLACE[-20:]
 
 
-async def fetch(session, url):
+async def _fetch(session, url):
     async with session.get(url) as response:
         if response.status != 200:
             return None
         return await response.text()
 
 
-async def get_pter_status():
+async def _get_pter_status():
     async with aiohttp.ClientSession(headers=HEADERS, cookies=COOKIES) as session:
-        raw_html = await fetch(session, f'https://pterclub.com/index.php')
+        raw_html = await _fetch(session, f'https://pterclub.com/index.php')
         if raw_html is None:
             return
         try:
@@ -53,19 +53,19 @@ async def get_pter_status():
         UPDATE_TIME = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(time.time()))
 
         PTER_PLACE.append(MAX_USERS - REGISTERED - PENDING)
-        await log.info(f"获取到了新的坑位信息：{REGISTERED} (已注册) + {PENDING} (待注册) / {MAX_USERS} (最大用户数)", "PTER_PLACE")
+        await log.debug(f"获取到了新的坑位信息：{REGISTERED} (已注册) + {PENDING} (待注册) / {MAX_USERS} (最大用户数)", "PTER_PLACE")
         return
 
 
 @scheduler.scheduled_job("interval", seconds=30)
 async def get_pter_place_and_notify():
-    await get_pter_status()
+    await _get_pter_status()
     await notify.send_notify()
 
 
 @scheduler.scheduled_job("interval", seconds=3600)
 async def clean_pter_place_job():
-    await clean_pter_place()
+    await _clean_pter_place()
 
 
 # 组装消息
@@ -86,7 +86,7 @@ async def get_place_message():
     return text
 
 
-async def delete_status_message():
+async def _delete_status_message():
     global MESSAGE_TO_BE_DELETED
     for message in MESSAGE_TO_BE_DELETED:
         try:
@@ -96,9 +96,9 @@ async def delete_status_message():
     MESSAGE_TO_BE_DELETED = []
 
 
-async def send_status_message(message):
+async def _send_status_message(message):
     message = await message.reply(await get_place_message())
-    await delete_status_message()
+    await _delete_status_message()
     MESSAGE_TO_BE_DELETED.append(message)
 
 
@@ -117,12 +117,13 @@ async def _check_and_reply(message, permission_required=False, work_group_requir
 @Client.on_message(filters.command('stats'))
 async def status_message(_, message):
     if await _check_and_reply(message, work_group_required=True):
-        await send_status_message(message)
+        await _send_status_message(message)
+        await log.command_log(message, "RAN_COMMAND_STATS", "执行了命令 stats")
 
 
 @Client.on_message(filters.command('flush'))
 async def flush_message(_, message):
     if await _check_and_reply(message, permission_required=True):
-        await get_pter_status()
-        await notify.send_notify()
-        await send_status_message(message)
+        await get_pter_place_and_notify()
+        await _send_status_message(message)
+        await log.command_log(message, "RAN_COMMAND_FLUSH", "执行了命令 flush")
