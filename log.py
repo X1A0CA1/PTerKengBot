@@ -74,8 +74,8 @@ async def _log_messages(log_type, log_message_content, log_function):
         f"#{log_type}\n\n"
         f"{log_message_content}"
     )
-    await send_message_with_length_check(LOG_CHAT, log_message, log_type)
     log_function(log_message)
+    log_function(await send_message_with_length_check(LOG_CHAT, log_message, log_type))
 
 
 async def cmd_eval_log(message, cmd, result):
