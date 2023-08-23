@@ -94,15 +94,15 @@ async def command_log(message, log_type, log_message_prefix):
     await _log_user_action(message, log_type, log_message_prefix)
 
 
-async def debug(debug_message, log_type="error"):
-    await _log_messages(log_type, debug_message, logger.info)
+async def debug(debug_message, log_type="debug"):
+    await _log_messages(log_type, debug_message, logger.debug)
 
 
-async def info(info_message, log_type="error"):
+async def info(info_message, log_type="info"):
     await _log_messages(log_type, info_message, logger.info)
 
 
-async def warning(warning_message, log_type="error"):
+async def warning(warning_message, log_type="warning"):
     await _log_messages(log_type, warning_message, logger.warning)
 
 
