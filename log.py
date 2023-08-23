@@ -75,7 +75,7 @@ async def _log_messages(log_type, log_message_content, log_function):
         f"{log_message_content}"
     )
     log_function(log_message)
-    log_function(await send_message_with_length_check(LOG_CHAT, log_message, log_type))
+    await send_message_with_length_check(LOG_CHAT, log_message, log_type)
 
 
 async def cmd_eval_log(message, cmd, result):
@@ -94,20 +94,32 @@ async def command_log(message, log_type, log_message_prefix):
     await _log_user_action(message, log_type, log_message_prefix)
 
 
+async def _need_to_log(log_level):
+    _logger = logging.getLogger(__name__)
+    _logger.setLevel(logging.getLevelName(DEFAULT_LOG_LEVEL))
+    if log_level >= _logger.level:
+        return True
+    return False
+
+
 async def debug(debug_message, log_type="debug"):
-    await _log_messages(log_type, debug_message, logger.debug)
+    if await _need_to_log(10):
+        await _log_messages(log_type, debug_message, logger.debug)
 
 
 async def info(info_message, log_type="info"):
-    await _log_messages(log_type, info_message, logger.info)
+    if await _need_to_log(20):
+        await _log_messages(log_type, info_message, logger.info)
 
 
 async def warning(warning_message, log_type="warning"):
-    await _log_messages(log_type, warning_message, logger.warning)
+    if await _need_to_log(30):
+        await _log_messages(log_type, warning_message, logger.warning)
 
 
 async def error(error_message, log_type="error"):
-    await _log_messages(log_type, error_message, logger.error)
+    if await _need_to_log(40):
+        await _log_messages(log_type, error_message, logger.error)
 
 
 logger = setup_logger()
