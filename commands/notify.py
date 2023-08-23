@@ -47,7 +47,7 @@ async def send_notify():
         try:
             text = f"坑无了\n{commands.pter_place.get_place_message()}"
             await bot.send_message(chat_id=NOTIFY_CHAT, text=text)
-            await bot.send_message(chat_id=LOG_CHAT, text="坑无了")
+            await bot.send_message(chat_id=LOG_CHAT, text=text)
             await bot.send_document(
                 WORK_CHAT,
                 STICKER_FOR_NO_PLACE
