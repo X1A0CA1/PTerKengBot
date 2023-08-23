@@ -26,7 +26,7 @@ async def start_bot():
         BotCommand("notice_me", "坑位变化的时候给我一个通知 Plz"),
         BotCommand("cancel_notice", "取消对我的通知")
     ])
-    print(f"[INFO]: {BOT_NAME} Started")
+    print("Bot Started!")
     await idle()
 
 

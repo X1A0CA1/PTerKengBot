@@ -52,7 +52,7 @@ async def check_permission(message: Message) -> bool:
     from_user_id = message.from_user.id if message.from_user else None
     sender_chat_id = message.sender_chat.id if message.sender_chat else None
 
-    if message.from_user:
+    if from_user_id is not None:
         user = await bot.get_chat_member(WORK_CHAT, from_user_id)
         if user.custom_title:
             return True
@@ -62,3 +62,33 @@ async def check_permission(message: Message) -> bool:
     return False
 
 
+def _contains_only_special_whitespace(string: str) -> bool:
+    chars = (
+        "\u000A\u0020\u200B\u200C\u200D\u200E\u200F\u2060\u2061\u2062\u2063\u2064\u2065\u2066"
+        "\u2068\u2069\u206A\u206B\u206C\u206D\u206E\u206F\u3164\uFE0F"
+    )
+    return all(char in chars for char in string)
+
+
+async def get_user_fullname_from_message(message: Message) -> str:
+    full_name = None
+    user = message.from_user
+    if user.first_name:
+        full_name = user.first_name
+    if user.last_name:
+        full_name += f" {user.last_name}"
+    if _contains_only_special_whitespace(full_name):
+        full_name = "某空白名字哥们儿"
+    return full_name
+
+
+async def get_chat_fullname_from_message(message: Message) -> str:
+    full_name = message.chat.title
+    if message.author_signature:
+        if _contains_only_special_whitespace(message.author_signature):
+            full_name += "(空白字符皮套人)"
+        else:
+            full_name += f"({message.author_signature})"
+    else:
+        full_name += "(无头衔皮套人)"
+    return full_name

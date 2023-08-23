@@ -51,7 +51,7 @@ async def get_pter_status():
         return
 
 
-@scheduler.scheduled_job("interval", seconds=30)
+@scheduler.scheduled_job("interval", seconds=3000)  # TODO 这里到生产环境改为 30
 async def main():
     await get_pter_status()
     await notify.chat_notify()

@@ -1,17 +1,22 @@
+# TG 配置部分
 API_ID =  # API_ID
 API_HASH = ""  # API_HASH
 BOT_TOKEN = ""  # BotFather 那边申请到的BOT_TOKEN
 BOT_NAME = ""  # 其实可以随意填写，但是最好和 BOT 的 USERNAME 一致
 
+# 猫站配置部分
 COOKIES = {}  # 用于登录的 COOKIES
-
 HEADERS = {}  # 用于登录的 HEADERS
 
+# 机器人管理配置部分
 ADMINS = []  # 被认证的管理员的 int(ID)，可以是多个。
 LOG_CHAT =   # 日志频道的 ID，用于发送日志。
 WORK_CHAT =  # 工作群组的 ID
 
+# 杂项
 TIME_ZONE = "Asia/Shanghai"
+DEFAULT_LOG_LEVEL = "DEBUG"  # "DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"
+
 
 INFO_DELETE_TIME = 5
 STATS_DELETE_TIME = 20
