@@ -1,6 +1,7 @@
 import contextlib
 import datetime
 import pytz
+import os
 
 from pyrogram.types import Message
 
@@ -92,3 +93,40 @@ async def get_chat_fullname_from_message(message: Message) -> str:
     else:
         full_name += "(无头衔皮套人)"
     return full_name
+
+
+def _length_check(text: str) -> bool:
+    return len(text) <= 4000
+
+
+async def send_message_with_length_check(chat_id, text, log_type) -> Message:
+    if _length_check(text):
+        message = await bot.send_message(chat_id, text, disable_web_page_preview=True)
+    else:
+        file_path = "tmp.txt"
+        with open(file_path, "w", encoding="utf-8") as file:
+            file.write(text)
+        message = await bot.send_document(
+            chat_id=chat_id,
+            document=file_path,
+            caption=f"#{log_type}\n消息过长，已经发送为文件"
+        )
+        os.remove(file_path)
+    return message
+
+
+async def reply_message_with_length_check(message, text) -> Message:
+    if _length_check(text):
+        message = await message.reply(text, disable_web_page_preview=True)
+    else:
+        file_path = "tmp.txt"
+        with open(file_path, "w", encoding="utf-8") as file:
+            file.write(text)
+        message = await bot.send_document(
+            chat_id=message.chat.id,
+            document=file_path,
+            caption=f"消息过长，已经发送为文件",
+            reply_to_message_id=message.id
+        )
+        os.remove(file_path)
+    return message

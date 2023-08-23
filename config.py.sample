@@ -12,6 +12,8 @@ HEADERS = {}  # 用于登录的 HEADERS
 ADMINS = []  # 被认证的管理员的 int(ID)，可以是多个。
 LOG_CHAT =   # 日志频道的 ID，用于发送日志。
 WORK_CHAT =  # 工作群组的 ID
+NOTIFY_CHAT =  # 通知频道的 ID。
+NOTIFY_CHAT_INVITE_LINK = ""  # 通知频道的邀请链接，用于发送给用户。将来会弃用。
 
 # 杂项
 TIME_ZONE = "Asia/Shanghai"
@@ -19,5 +21,4 @@ DEFAULT_LOG_LEVEL = "DEBUG"  # "DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"
 
 
 INFO_DELETE_TIME = 5
-STATS_DELETE_TIME = 20
 HELP_DELETE_TIME = 60

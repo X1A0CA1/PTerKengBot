@@ -5,7 +5,7 @@ import traceback
 from pyrogram import Client, filters
 
 import log
-from utils import reply_and_delay_delete, check_permission
+from utils import delay_delete, reply_and_delay_delete, check_permission, reply_message_with_length_check
 
 
 async def run_eval(cmd: str, message=None, only_result: bool = False) -> str:
@@ -58,4 +58,8 @@ async def python_eval(_, message):
         return
     final_output = await run_eval(cmd, message)
     await log.cmd_eval_log(message, cmd, final_output)
-    await reply_and_delay_delete(message, final_output, 10)
+
+    await delay_delete(
+        await reply_message_with_length_check(message, final_output),
+        30
+    )

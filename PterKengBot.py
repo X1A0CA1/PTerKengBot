@@ -23,8 +23,7 @@ async def start_bot():
         BotCommand("stats", "查看站点统计信息"),
         BotCommand("ping", "小菜只因器人还活着吗？"),
         BotCommand("flush", "强制刷新数据（仅管理可用）"),
-        BotCommand("notice_me", "坑位变化的时候给我一个通知 Plz"),
-        BotCommand("cancel_notice", "取消对我的通知")
+        BotCommand("notice_me", "坑位变化通知你")
     ])
     print("Bot Started!")
     await idle()

@@ -1,5 +1,4 @@
 config.py
-notification_list.json
 *.session
 *.session-journal
 
