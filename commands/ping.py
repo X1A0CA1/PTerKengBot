@@ -15,11 +15,11 @@ async def ping_message(bot, message):
     end = datetime.now()
     ping_duration = (end - start).microseconds / 1000
     start = datetime.now()
-    message = await message.reply("Poi~", disable_notification=True)
+    waiting_for_edit_message = await message.reply("Poi~", disable_notification=True)
     end = datetime.now()
     msg_duration = (end - start).microseconds / 1000
     await edit_and_delay_delete(
-        message,
+        waiting_for_edit_message,
         f"Poi~ | 服务器延迟: {ping_duration}ms | 消息延迟: {msg_duration}ms",
         INFO_DELETE_TIME
     )
