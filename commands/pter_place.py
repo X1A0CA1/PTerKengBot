@@ -53,7 +53,7 @@ async def _get_pter_status():
         UPDATE_TIME = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(time.time()))
 
         PTER_PLACE.append(MAX_USERS - REGISTERED - PENDING)
-        await log.debug(f"获取到了新的坑位信息：{REGISTERED} (已注册) + {PENDING} (待注册) / {MAX_USERS} (最大用户数)", "PTER_PLACE")
+        await log.debug(f"获取到了新的坑位信息：{REGISTERED} + {PENDING} (待注册) / {MAX_USERS}", "PTER_PLACE")
         return
 
 
@@ -79,7 +79,7 @@ async def get_place_message():
     else:
         info = f"当前剩余坑位 {free} 人"
     text = (
-        f"当前坑位: {REGISTERED} (已注册) + {PENDING} (待注册) / {MAX_USERS} (最大用户数)\n"
+        f"当前坑位: {REGISTERED} + {PENDING} (待注册) / {MAX_USERS}\n"
         f"{info}\n"
         f"数据更新时间: {UPDATE_TIME}"
     )
