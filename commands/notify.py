@@ -34,7 +34,7 @@ async def send_notify():
 
     if need_to_notify:
         try:
-            text = f"有坑了\n{commands.pter_place.get_place_message()}"
+            text = f"有坑了\n{await commands.pter_place.get_place_message()}"
             await bot.send_message(chat_id=NOTIFY_CHAT, text=text)
             await bot.send_message(chat_id=LOG_CHAT, text=text)
             await bot.send_document(
@@ -45,7 +45,7 @@ async def send_notify():
             await log.error(f"通知时出现了问题\n {e}", "NOTIFY_ERROR")
     elif not need_to_notify:
         try:
-            text = f"坑无了\n{commands.pter_place.get_place_message()}"
+            text = f"坑无了\n{await commands.pter_place.get_place_message()}"
             await bot.send_message(chat_id=NOTIFY_CHAT, text=text)
             await bot.send_message(chat_id=LOG_CHAT, text=text)
             await bot.send_document(
