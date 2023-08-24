@@ -65,6 +65,7 @@ async def no_permission_log(message):
 
 
 async def command_log(message, log_tag, log_rule):
+    log_tag += " #command_log"
     await _log_user_action(message, log_tag, log_rule)
 
 
