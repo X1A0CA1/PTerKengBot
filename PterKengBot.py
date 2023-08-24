@@ -1,4 +1,4 @@
-from config import BOT_NAME, BOT_TOKEN, API_ID, API_HASH
+from config import BOT_NAME, BOT_TOKEN, API_ID, API_HASH, LOG_CHAT
 
 from pyrogram import Client, idle
 from pyrogram.types import BotCommand
@@ -26,6 +26,7 @@ async def start_bot():
         BotCommand("notice_me", "坑位变化通知你")
     ])
     print("Bot Started!")
+    await bot.send_message(LOG_CHAT, "Bot Started!")
     await idle()
 
 

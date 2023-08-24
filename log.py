@@ -37,7 +37,7 @@ async def _log_user_action(message, log_tag, log_rule, more_log_text=None):
         )
 
     log_summaries = (
-        f"用户 {full_name}({user_id}) 在群组 {chat_title}({chat_id}) 触发了规则: {log_rule}"
+        f"用户 **{full_name}** ({user_id}) 在群组 **{chat_title}** ({chat_id}) 触发了规则: {log_rule}"
     )
     log_message = (
         f"{log_tag}\n\n"

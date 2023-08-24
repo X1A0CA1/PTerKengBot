@@ -51,6 +51,7 @@ async def aexec(code, event, client):
 @Client.on_message(filters.command("eval"))
 async def python_eval(_, message):
     if not await check_permission(message):
+        await log.no_permission_log(message)
         return await reply_and_delay_delete(message, "你没有权限使用该命令", 3)
     try:
         cmd = message.text.split(" ", maxsplit=1)[1]

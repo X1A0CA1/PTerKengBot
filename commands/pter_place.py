@@ -110,7 +110,6 @@ async def _delete_status_message():
             )
 
 
-
 async def _send_status_message(message):
     message = await message.reply(await get_place_message())
     await _delete_status_message()
