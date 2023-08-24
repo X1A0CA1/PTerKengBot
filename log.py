@@ -5,7 +5,7 @@ from config import DEFAULT_LOG_LEVEL, LOG_CHAT
 from utils import (
     send_message_with_length_check,
     get_fullname_and_user_id_from_message,
-    get_chat_tilte_and_id_from_message
+    get_chat_title_and_id_from_message
 )
 
 
@@ -26,7 +26,7 @@ def setup_logger():
 
 
 async def _log_user_action(message, log_tag, log_rule, more_log_text=None):
-    chat_title, chat_id = await get_chat_tilte_and_id_from_message(message)
+    chat_title, chat_id = await get_chat_title_and_id_from_message(message)
     full_name, user_id = await get_fullname_and_user_id_from_message(message)
     if not full_name or not user_id or not chat_title or not chat_id:
         return await _log_messages(

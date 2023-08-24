@@ -13,7 +13,7 @@ from config import TIME_ZONE, WORK_CHAT, ADMINS, INFO_DELETE_TIME
 from PterKengBot import bot
 
 
-async def delete_message(message) -> bool:
+async def _delete_message(message) -> bool:
     with contextlib.suppress(Exception):
         await message.delete()
         return True
@@ -22,7 +22,7 @@ async def delete_message(message) -> bool:
 
 def add_delete_message_job(message: Message, time: int) -> None:
     scheduler.add_job(
-        delete_message,
+        _delete_message,
         "date",
         id=f"{message.chat.id}|{message.id}|delete_message",
         name=f"{message.chat.id}|{message.id}|delete_message",
@@ -74,7 +74,7 @@ def _contains_only_special_whitespace(string: str) -> bool:
     return all(char in chars for char in string)
 
 
-async def get_user_fullname_from_message(message: Message) -> str:
+async def get_sender_user_fullname_from_message(message: Message) -> str:
     full_name = None
     user = message.from_user
     if user.first_name:
@@ -100,7 +100,7 @@ async def get_sender_chat_fullname_from_message(message: Message) -> str:
 
 async def get_fullname_and_user_id_from_message(message: Message) -> tuple[None, None] | tuple[str, int]:
     if message.from_user:
-        full_name = await get_user_fullname_from_message(message)
+        full_name = await get_sender_user_fullname_from_message(message)
         user_id = message.from_user.id
     elif message.sender_chat:
         full_name = await get_sender_chat_fullname_from_message(message)
@@ -110,12 +110,12 @@ async def get_fullname_and_user_id_from_message(message: Message) -> tuple[None,
     return full_name, user_id
 
 
-async def get_chat_tilte_and_id_from_message(message: Message) -> tuple[None, None] | tuple[str, int]:
+async def get_chat_title_and_id_from_message(message: Message) -> tuple[None, None] | tuple[str, int]:
     if message.chat.type in [ChatType.CHANNEL, ChatType.SUPERGROUP, ChatType.GROUP]:
         chat_title = message.chat.title
         chat_id = message.chat.id
     elif message.chat.type in [ChatType.BOT, ChatType.PRIVATE]:
-        chat_title = await get_user_fullname_from_message(message)
+        chat_title = await get_sender_user_fullname_from_message(message)
         chat_id = message.chat.id
     else:
         return None, None
@@ -159,13 +159,13 @@ async def reply_message_with_length_check(message, text) -> Message:
     return message
 
 
-async def check_required(message, permission_required=False, work_group_required=False) -> bool:
+async def check_required(message, admin_required=False, work_group_required=False) -> bool:
     if work_group_required and not await check_work_group(message):
         await log.not_work_group_log(message)
         await reply_and_delay_delete(message, "请在猫站群内使用该命令", INFO_DELETE_TIME)
         return False
 
-    if permission_required and not await check_permission(message):
+    if admin_required and not await check_permission(message):
         await log.no_permission_log(message)
         await reply_and_delay_delete(message, "你没有权限使用该命令", INFO_DELETE_TIME)
         return False

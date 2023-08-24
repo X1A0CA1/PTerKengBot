@@ -125,7 +125,7 @@ async def status_message(_, message):
 
 @Client.on_message(filters.command('flush'))
 async def flush_message(_, message):
-    if await check_required(message, permission_required=True):
+    if await check_required(message, admin_required=True):
         await get_pter_place_and_notify()
         await _send_status_message(message)
         await log.command_log(message, "#RAN_COMMAND_FLUSH",
