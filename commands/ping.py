@@ -23,4 +23,4 @@ async def ping_message(bot, message):
         f"Poi~ | 服务器延迟: {ping_duration}ms | 消息延迟: {msg_duration}ms",
         INFO_DELETE_TIME
     )
-    await log.command_log(message, "RAN_COMMAND_PING", "执行了命令 ping")
+    await log.command_log(message, "RAN_COMMAND_PING", "执行/ping")

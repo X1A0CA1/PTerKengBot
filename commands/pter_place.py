@@ -38,7 +38,11 @@ async def _get_pter_status():
         try:
             html = BeautifulSoup(raw_html, 'html.parser')
         except Exception as e:
-            await log.error(f"bs解析html时出现了错误：\n{e}\n\n raw_html: {raw_html}", "HTML_PARSE_ERROR")
+            await log.warning(
+                log_tag="#HTML_PARSE_ERROR",
+                log_summaries="bs解析html时出现了错误:",
+                more_log_text=f"{e}\n\n raw_html: \n{raw_html}"
+            )
             return
 
         global REGISTERED, PENDING, MAX_USERS, UPDATE_TIME, PTER_PLACE
@@ -48,12 +52,19 @@ async def _get_pter_status():
             MAX_USERS = int("".join(re.findall(r"\d+", status[1])))
             PENDING = int(str(html.find_all('td', class_='rowhead')[4].find_next_sibling('td').text))
         except Exception as e:
-            await log.error(f"在html中获取信息出现了错误：\n{e}\n\n raw_html: {raw_html}", "HTML_PARSE_ERROR")
+            await log.warning(
+                log_tag="#HTML_PARSE_ERROR",
+                log_summaries="在html中获取信息出现了错误:",
+                more_log_text=f"{e}\n\n raw_html: \n{raw_html}"
+            )
             return
-        UPDATE_TIME = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(time.time()))
+        UPDATE_TIME = time.strftime("%Y-%m-%d %H:%M", time.localtime(time.time()))
 
         PTER_PLACE.append(MAX_USERS - REGISTERED - PENDING)
-        await log.debug(f"获取到了新的坑位信息：\n\n{await get_place_message()}", "PTER_PLACE")
+        await log.debug(
+            log_tag="#PTER_PLACE",
+            log_summaries=f"获取到了新的坑位信息：\n\n{await get_place_message()}"
+        )
         return
 
 
@@ -78,12 +89,11 @@ async def get_place_message():
         info = "当前猫站不多不少刚好满～"
     else:
         info = f"当前剩余坑位 {free} 人"
-    text = (
+    return (
         f"当前坑位: {REGISTERED + PENDING} (含 {PENDING} 待注册) / {MAX_USERS}\n\n"
         f"{info}\n\n"
         f"数据更新时间: {UPDATE_TIME}"
     )
-    return text
 
 
 async def _delete_status_message():
@@ -92,8 +102,13 @@ async def _delete_status_message():
         try:
             await message.delete()
         except Exception as e:
-            await log.error(f"在删除消息时出现了错误：\n{e}\n\n MESSAGE_TO_BE_DELETED: {MESSAGE_TO_BE_DELETED}")
-    MESSAGE_TO_BE_DELETED = []
+            MESSAGE_TO_BE_DELETED = []
+            await log.warning(
+                log_tag="#DELETE_STATUS_MESSAGE_ERROR",
+                log_summaries="在删除以前的/stats回复消息时虽然出现了错误，但已清空列表:",
+                more_log_text=f"{e}"
+            )
+
 
 
 async def _send_status_message(message):
@@ -118,7 +133,7 @@ async def _check_and_reply(message, permission_required=False, work_group_requir
 async def status_message(_, message):
     if await _check_and_reply(message, work_group_required=True):
         await _send_status_message(message)
-        await log.command_log(message, "RAN_COMMAND_STATS", "执行了命令 stats")
+        await log.command_log(message, "RAN_COMMAND_STATS", "执行/stats")
 
 
 @Client.on_message(filters.command('flush'))
@@ -126,4 +141,4 @@ async def flush_message(_, message):
     if await _check_and_reply(message, permission_required=True):
         await get_pter_place_and_notify()
         await _send_status_message(message)
-        await log.command_log(message, "RAN_COMMAND_FLUSH", "执行了命令 flush")
+        await log.command_log(message, "RAN_COMMAND_FLUSH", "执行了/flush")

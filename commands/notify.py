@@ -24,19 +24,22 @@ async def need_notify():
         return False
     else:
         return None
-        
+
 
 async def send_notify_message(text, sticker):
     try:
         await bot.send_message(chat_id=NOTIFY_CHAT, text=text)
         await bot.send_message(chat_id=LOG_CHAT, text=text)
         await bot.send_document(
-                WORK_CHAT,
-                sticker
-            )
+            WORK_CHAT,
+            sticker
+        )
     except Exception as e:
-            await log.error(f"通知时出现了问题\n {e}\n\n通知消息：\n{text}", "NOTIFY_ERROR")
-            
+        await log.error(
+            log_tag="#NOTIFY_ERROR",
+            log_summaries="通知时出现了问题:",
+            more_log_text=f"{e}\n\n 通知消息: \n{text}"
+        )
 
 
 async def send_notify():
@@ -54,6 +57,6 @@ async def send_notify():
 @Client.on_message(filters.command('notice_me'))
 async def notice_me(_, message):
     await reply_and_delay_delete(message, f"请加入通知频道~ \n{NOTIFY_CHAT_INVITE_LINK}", INVITE_LINK_DELETE_TIME)
-    await log.command_log(message, "RAN_COMMAND_NOTICE_ME", "执行了命令 notice_me")
+    await log.command_log(message, "RAN_COMMAND_NOTICE_ME", "执行/notice_me")
     # TODO 重写 notice_me，生成邀请链接，私聊发送邀请链接，使用/超出时间限制后销毁。
     # TODO 定时查看用户是否在猫站群组中，如果不在则踢出通知频道。如果是皮套人则在发送私聊链接的时候提醒需要联系我提升为管理员以避免踢出。

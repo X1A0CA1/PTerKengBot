@@ -1,9 +1,12 @@
 import contextlib
 import datetime
+from typing import Tuple
+
 import pytz
 import os
 
 from pyrogram.types import Message
+from pyrogram.enums.chat_type import ChatType
 
 from scheduler import scheduler
 from config import TIME_ZONE, WORK_CHAT, ADMINS
@@ -83,23 +86,47 @@ async def get_user_fullname_from_message(message: Message) -> str:
     return full_name
 
 
-async def get_chat_fullname_from_message(message: Message) -> str:
-    full_name = message.chat.title
+async def get_sender_chat_fullname_from_message(message: Message) -> str:
+    full_name = message.sender_chat.title
     if message.author_signature:
         if _contains_only_special_whitespace(message.author_signature):
             full_name += "(空白字符皮套人)"
         else:
             full_name += f"({message.author_signature})"
     else:
-        full_name += "(无头衔皮套人)"
+        full_name += ("(频道皮套)" if message.sender_chat.type is ChatType.CHANNEL else "(无头衔群组皮套)")
     return full_name
+
+
+async def get_fullname_and_user_id_from_message(message: Message) -> tuple[None, None] | tuple[str, int]:
+    if message.from_user:
+        full_name = await get_user_fullname_from_message(message)
+        user_id = message.from_user.id
+    elif message.sender_chat:
+        full_name = await get_sender_chat_fullname_from_message(message)
+        user_id = message.sender_chat.id
+    else:
+        return None, None
+    return full_name, user_id
+
+
+async def get_chat_tilte_and_id_from_message(message: Message) -> tuple[None, None] | tuple[str, int]:
+    if message.chat.type in [ChatType.CHANNEL, ChatType.SUPERGROUP, ChatType.GROUP]:
+        chat_title = message.chat.title
+        chat_id = message.chat.id
+    elif message.chat.type in [ChatType.BOT, ChatType.PRIVATE]:
+        chat_title = await get_user_fullname_from_message(message)
+        chat_id = message.chat.id
+    else:
+        return None, None
+    return chat_title, chat_id
 
 
 def _length_check(text: str) -> bool:
     return len(text) <= 4000
 
 
-async def send_message_with_length_check(chat_id, text, log_type, log_summaries=None) -> Message:
+async def send_message_with_length_check(chat_id, text, log_summaries=None) -> Message:
     if _length_check(text):
         message = await bot.send_message(chat_id, text, disable_web_page_preview=True)
     else:
@@ -109,7 +136,7 @@ async def send_message_with_length_check(chat_id, text, log_type, log_summaries=
         message = await bot.send_document(
             chat_id=chat_id,
             document=file_path,
-            caption=f"#{log_type}\n\n摘要：{log_summaries}\n但消息过长，已经发送为文件"
+            caption=f"{log_summaries}\n\n消息过长，已经发送为文件"
         )
         os.remove(file_path)
     return message
