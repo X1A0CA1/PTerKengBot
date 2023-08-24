@@ -22,4 +22,4 @@ HELP_MESSAGE = (
 @Client.on_message(filters.command('help'))
 async def help_message(_, message):
     await reply_and_delay_delete(message, HELP_MESSAGE, HELP_DELETE_TIME)
-    await log.command_log(message, "RAN_COMMAND_HELP", "执行/help")
+    await log.command_log(message, "#RAN_COMMAND_HELP", "执行/help")

@@ -132,7 +132,7 @@ async def _check_and_reply(message, permission_required=False, work_group_requir
 async def status_message(_, message):
     if await _check_and_reply(message, work_group_required=True):
         await _send_status_message(message)
-        await log.command_log(message, "RAN_COMMAND_STATS", "执行/stats")
+        await log.command_log(message, "#RAN_COMMAND_STATS", "执行/stats")
 
 
 @Client.on_message(filters.command('flush'))
@@ -140,4 +140,4 @@ async def flush_message(_, message):
     if await _check_and_reply(message, permission_required=True):
         await get_pter_place_and_notify()
         await _send_status_message(message)
-        await log.command_log(message, "RAN_COMMAND_FLUSH", "执行了/flush")
+        await log.command_log(message, "#RAN_COMMAND_FLUSH", "执行了/flush")
