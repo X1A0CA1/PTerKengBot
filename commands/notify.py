@@ -13,47 +13,42 @@ STICKER_FOR_NO_PLACE = "BQACAgUAAx0ETaitjQABDrVcZC7-DHoDQxTig8mGKF4tXTtDjZUAAgMI
 async def need_notify():
     pter_place = commands.pter_place.PTER_PLACE
     if pter_place is None:
-        return
+        return None
     if len(pter_place) <= 2:
-        return
+        return None
     if pter_place[-1] == pter_place[-2]:
-        return
+        return None
     if pter_place[-1] > 0 >= pter_place[-2]:
         return True
     elif pter_place[-1] <= 0 < pter_place[-2]:
         return False
     else:
         return None
+        
+
+async def send_notify_message(text, sticker):
+    try:
+        await bot.send_message(chat_id=NOTIFY_CHAT, text=text)
+        await bot.send_message(chat_id=LOG_CHAT, text=text)
+        await bot.send_document(
+                WORK_CHAT,
+                sticker
+            )
+    except Exception as e:
+            await log.error(f"通知时出现了问题\n {e}\n\n通知消息：\n{text}", "NOTIFY_ERROR")
+            
 
 
 async def send_notify():
     need_to_notify = await need_notify()
-
     if need_to_notify is None:
         return
-
-    if need_to_notify:
-        try:
-            text = f"有坑了\n{await commands.pter_place.get_place_message()}"
-            await bot.send_message(chat_id=NOTIFY_CHAT, text=text)
-            await bot.send_message(chat_id=LOG_CHAT, text=text)
-            await bot.send_document(
-                WORK_CHAT,
-                STICKER_FOR_HAS_PLACE
-            )
-        except Exception as e:
-            await log.error(f"通知时出现了问题\n {e}", "NOTIFY_ERROR")
-    elif not need_to_notify:
-        try:
-            text = f"坑无了\n{await commands.pter_place.get_place_message()}"
-            await bot.send_message(chat_id=NOTIFY_CHAT, text=text)
-            await bot.send_message(chat_id=LOG_CHAT, text=text)
-            await bot.send_document(
-                WORK_CHAT,
-                STICKER_FOR_NO_PLACE
-            )
-        except Exception as e:
-            await log.error(f"通知时出现了问题\n {e}", "NOTIFY_ERROR")
+    if need_to_notify is True:
+        text = f"有坑了\n\n{await commands.pter_place.get_place_message()}"
+        await send_notify_message(text, STICKER_FOR_HAS_PLACE)
+    elif need_to_notify is False:
+        text = f"坑无了\n\n{await commands.pter_place.get_place_message()}"
+        await send_notify_message(text, STICKER_FOR_NO_PLACE)
 
 
 @Client.on_message(filters.command('notice_me'))
