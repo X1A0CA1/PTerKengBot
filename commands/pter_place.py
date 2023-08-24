@@ -128,4 +128,5 @@ async def flush_message(_, message):
     if await check_required(message, permission_required=True):
         await get_pter_place_and_notify()
         await _send_status_message(message)
-        await log.command_log(message, "#RAN_COMMAND_FLUSH", f"获取到了新的坑位信息：\n\n{await get_place_message()}")
+        await log.command_log(message, "#RAN_COMMAND_FLUSH",
+                              f"执行/flush，返回为：\n获取到了新的坑位信息：\n\n{await get_place_message()}")
