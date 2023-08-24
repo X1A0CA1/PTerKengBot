@@ -5,8 +5,8 @@ from bs4 import BeautifulSoup
 
 import log
 from scheduler import scheduler
-from config import COOKIES, HEADERS, INFO_DELETE_TIME
-from utils import reply_and_delay_delete, check_permission, check_work_group
+from config import COOKIES, HEADERS
+from utils import check_required
 from . import notify
 
 from pyrogram import Client, filters
@@ -116,28 +116,16 @@ async def _send_status_message(message):
     MESSAGE_TO_BE_DELETED.append(message)
 
 
-async def _check_and_reply(message, permission_required=False, work_group_required=False):
-    if work_group_required and not await check_work_group(message):
-        await log.not_work_group_log(message)
-        return await reply_and_delay_delete(message, "请在猫站群内使用该命令", INFO_DELETE_TIME)
-
-    if permission_required and not await check_permission(message):
-        await log.no_permission_log(message)
-        return await reply_and_delay_delete(message, "你没有权限使用该命令", INFO_DELETE_TIME)
-
-    return True
-
-
 @Client.on_message(filters.command('stats'))
 async def status_message(_, message):
-    if await _check_and_reply(message, work_group_required=True):
+    if await check_required(message, work_group_required=True):
         await _send_status_message(message)
         await log.command_log(message, "#RAN_COMMAND_STATS", "执行/stats")
 
 
 @Client.on_message(filters.command('flush'))
 async def flush_message(_, message):
-    if await _check_and_reply(message, permission_required=True):
+    if await check_required(message, permission_required=True):
         await get_pter_place_and_notify()
         await _send_status_message(message)
         await log.command_log(message, "#RAN_COMMAND_FLUSH", f"获取到了新的坑位信息：\n\n{await get_place_message()}")

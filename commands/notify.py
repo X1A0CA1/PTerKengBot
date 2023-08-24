@@ -4,7 +4,7 @@ import commands.pter_place
 import log
 from config import LOG_CHAT, WORK_CHAT, NOTIFY_CHAT, NOTIFY_CHAT_INVITE_LINK, INVITE_LINK_DELETE_TIME
 from PterKengBot import bot
-from utils import reply_and_delay_delete
+from utils import reply_and_delay_delete, check_required
 
 STICKER_FOR_HAS_PLACE = "BQACAgUAAx0ETaitjQABDrVbZC7-CyRnP9bNWyL6uyQTsEZYmhUAAgIIAAKBgXlVI9gBrugVVmAeBA"
 STICKER_FOR_NO_PLACE = "BQACAgUAAx0ETaitjQABDrVcZC7-DHoDQxTig8mGKF4tXTtDjZUAAgMIAAKBgXlVIUkm6W3k8YseBA"
@@ -56,7 +56,8 @@ async def send_notify():
 
 @Client.on_message(filters.command('notice_me'))
 async def notice_me(_, message):
-    await reply_and_delay_delete(message, f"请加入通知频道~ \n{NOTIFY_CHAT_INVITE_LINK}", INVITE_LINK_DELETE_TIME)
-    await log.command_log(message, "#RAN_COMMAND_NOTICE_ME", "执行/notice_me")
     # TODO 重写 notice_me，生成邀请链接，私聊发送邀请链接，使用/超出时间限制后销毁。
     # TODO 定时查看用户是否在猫站群组中，如果不在则踢出通知频道。如果是皮套人则在发送私聊链接的时候提醒需要联系我提升为管理员以避免踢出。
+    if await check_required(message, work_group_required=True):
+        await reply_and_delay_delete(message, f"请加入通知频道~ \n{NOTIFY_CHAT_INVITE_LINK}", INVITE_LINK_DELETE_TIME)
+        await log.command_log(message, "#RAN_COMMAND_NOTICE_ME", "执行/notice_me")

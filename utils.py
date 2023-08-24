@@ -1,15 +1,15 @@
 import contextlib
 import datetime
-from typing import Tuple
 
 import pytz
 import os
+import log
 
 from pyrogram.types import Message
 from pyrogram.enums.chat_type import ChatType
 
 from scheduler import scheduler
-from config import TIME_ZONE, WORK_CHAT, ADMINS
+from config import TIME_ZONE, WORK_CHAT, ADMINS, INFO_DELETE_TIME
 from PterKengBot import bot
 
 
@@ -157,3 +157,17 @@ async def reply_message_with_length_check(message, text) -> Message:
         )
         os.remove(file_path)
     return message
+
+
+async def check_required(message, permission_required=False, work_group_required=False) -> bool:
+    if work_group_required and not await check_work_group(message):
+        await log.not_work_group_log(message)
+        await reply_and_delay_delete(message, "请在猫站群内使用该命令", INFO_DELETE_TIME)
+        return False
+
+    if permission_required and not await check_permission(message):
+        await log.no_permission_log(message)
+        await reply_and_delay_delete(message, "你没有权限使用该命令", INFO_DELETE_TIME)
+        return False
+
+    return True
