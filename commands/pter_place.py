@@ -15,6 +15,7 @@ REGISTERED = PENDING = MAX_USERS = UPDATE_TIME = 0
 
 PTER_PLACE = []
 MESSAGE_TO_BE_DELETED = []
+PTER_DOWN = None
 
 
 async def _clean_pter_place():
@@ -31,41 +32,45 @@ async def _fetch(session, url):
 
 
 async def _get_pter_status():
+    global REGISTERED, PENDING, MAX_USERS, UPDATE_TIME, PTER_PLACE, PTER_DOWN
+
     async with aiohttp.ClientSession(headers=HEADERS, cookies=COOKIES) as session:
         raw_html = await _fetch(session, f'https://pterclub.com/index.php')
-        if raw_html is None:
-            return
+
         try:
             html = BeautifulSoup(raw_html, 'html.parser')
-        except Exception as e:
-            await log.warning(
-                log_tag="#HTML_PARSE_ERROR",
-                log_summaries="bs解析html时出现了错误:",
-                more_log_text=f"{e}\n\n raw_html: \n{raw_html}"
-            )
-            return
-
-        global REGISTERED, PENDING, MAX_USERS, UPDATE_TIME, PTER_PLACE
-        try:
             status = str(html.find_all('td', class_='rowhead')[2].find_next_sibling('td').text).split("/")
             REGISTERED = int("".join(re.findall(r"\d+", status[0])))
             MAX_USERS = int("".join(re.findall(r"\d+", status[1])))
             PENDING = int(str(html.find_all('td', class_='rowhead')[4].find_next_sibling('td').text))
+            UPDATE_TIME = time.strftime("%Y-%m-%d %H:%M", time.localtime(time.time()))
+            PTER_PLACE.append(MAX_USERS - REGISTERED - PENDING)
+
+            if PTER_DOWN:
+                PTER_DOWN = False
+                await log.info(
+                    log_tag="#PTER_BACK",
+                    log_summaries="猫站已恢复"
+                )
+            elif PTER_DOWN is None:
+                PTER_DOWN = False
+
+            await log.debug(
+                log_tag="#PTER_PLACE",
+                log_summaries=f"获取到了新的坑位信息：\n\n{await get_place_message()}"
+            )
+
+            return
         except Exception as e:
+            if not PTER_DOWN:
+                PTER_DOWN = True
             await log.warning(
-                log_tag="#HTML_PARSE_ERROR",
-                log_summaries="在html中获取信息出现了错误:",
+                log_tag="#PTER_DOWN",
+                log_summaries="猫站可能挂了。解析html时出现了错误:",
                 more_log_text=f"{e}\n\n raw_html: \n{raw_html}"
             )
             return
-        UPDATE_TIME = time.strftime("%Y-%m-%d %H:%M", time.localtime(time.time()))
 
-        PTER_PLACE.append(MAX_USERS - REGISTERED - PENDING)
-        await log.debug(
-            log_tag="#PTER_PLACE",
-            log_summaries=f"获取到了新的坑位信息：\n\n{await get_place_message()}"
-        )
-        return
 
 
 @scheduler.scheduled_job("interval", seconds=30)
