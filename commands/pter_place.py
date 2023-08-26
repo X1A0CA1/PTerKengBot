@@ -66,11 +66,11 @@ async def _get_pter_status():
         except Exception as e:
             if not PTER_DOWN:
                 PTER_DOWN = True
-            await log.warning(
-                log_tag="#PTER_DOWN",
-                log_summaries="猫站可能挂了。解析html时出现了错误:",
-                more_log_text=f"{e}\n\n raw_html: \n{raw_html}"
-            )
+                await log.warning(
+                    log_tag="#PTER_DOWN",
+                    log_summaries="猫站可能挂了。解析html时出现了错误:",
+                    more_log_text=f"{e}\n\n raw_html: \n{raw_html}"
+                )
             return
 
 
