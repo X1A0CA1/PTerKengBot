@@ -37,14 +37,14 @@ async def _log_user_action(message, log_tag, log_rule, more_log_text=None):
         )
 
     log_summaries = (
+        f"{log_tag}\n\n"
         f"用户 **{full_name}** ({user_id}) 在群组 **{chat_title}** ({chat_id}) 触发了规则: {log_rule}"
     )
-    log_message = (
-        f"{log_tag}\n\n"
-        f"{log_summaries}"
-    )
     if more_log_text:
-        log_message += f"\n{more_log_text}"
+        log_message = f"{log_summaries}\n{more_log_text}"
+    else:
+        log_message = log_summaries
+
     await send_message_with_length_check(LOG_CHAT, log_message, log_summaries)
     logger.info(log_message)
 
@@ -70,13 +70,15 @@ async def command_log(message, log_tag, log_rule):
 
 
 async def _log_messages(log_tag, log_summaries, log_function, more_log_text=None):
-    log_message = (
+    log_summaries = (
         f"{log_tag}\n\n"
         f"{log_summaries}"
     )
 
     if more_log_text:
-        log_message += f"\n{more_log_text}"
+        log_message = f"{log_summaries}\n{more_log_text}"
+    else:
+        log_message = log_summaries
 
     log_function(log_message)
     await send_message_with_length_check(LOG_CHAT, log_message, log_summaries)
