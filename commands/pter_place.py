@@ -17,6 +17,8 @@ PTER_PLACE = []
 MESSAGE_TO_BE_DELETED = []
 PTER_DOWN = None
 
+PTER_URL = "https://pterclub.com/index.php"
+
 
 async def _clean_pter_place():
     global PTER_PLACE
@@ -35,7 +37,7 @@ async def _get_pter_status():
     global REGISTERED, PENDING, MAX_USERS, UPDATE_TIME, PTER_PLACE, PTER_DOWN
 
     async with aiohttp.ClientSession(headers=HEADERS, cookies=COOKIES) as session:
-        raw_html = await _fetch(session, f'https://pterclub.com/index.php')
+        raw_html = await _fetch(session, PTER_URL)
 
         try:
             html = BeautifulSoup(raw_html, 'html.parser')
@@ -70,7 +72,6 @@ async def _get_pter_status():
                 more_log_text=f"{e}\n\n raw_html: \n{raw_html}"
             )
             return
-
 
 
 @scheduler.scheduled_job("interval", seconds=30)
