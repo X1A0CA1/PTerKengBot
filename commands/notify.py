@@ -50,7 +50,7 @@ async def send_notify():
         text = f"有坑了\n\n{await commands.pter_place.get_place_message()}"
         await send_notify_message(text, STICKER_FOR_HAS_PLACE)
     elif need_to_notify is False:
-        text = f"坑无了\n\n{await commands.pter_place.get_place_message()}"
+        text = f"坑无了"
         await send_notify_message(text, STICKER_FOR_NO_PLACE)
 
 
