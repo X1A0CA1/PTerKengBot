@@ -4,7 +4,7 @@ import log
 from config import BOT_NAME, HELP_DELETE_TIME
 from utils import reply_and_delay_delete
 
-HELP_MESSAGE = f"""```U
+HELP_MESSAGE = f"""```
 **PTerKengBot HELP**
 /help@{BOT_NAME}               显示此帮助信息
 /ping@{BOT_NAME}               查看机器人存活状态
@@ -19,9 +19,10 @@ HELP_MESSAGE = f"""```U
 带有 * 的命令仅可以在猫站群内使用。
 带有 P 的命令仅可以在私聊内使用。
 
-**机器人带有黑名单、日志收集，请勿滥用**。\n@PterKengBot 不是官方所编写、维护的的机器人。
+**机器人带有黑名单、日志收集，请勿滥用** 。\n@PterKengBot 不是官方所编写、维护的的机器人。
 v1.4.1@PlanTech"
-"""
+```"""
+
 
 
 @Client.on_message(filters.command('help'))
