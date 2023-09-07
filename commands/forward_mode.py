@@ -22,25 +22,27 @@ async def clean_forwarding_dict():
         )
 
 
-@Client.on_message(filters.command("forward_mode", prefixes="/"))
+@Client.on_message(filters.command("forward_mode", prefixes="/") & filters.private & ~filters.me)
 async def reply_mode_command(_, message):
     await check_required(message, admin_required=True)
+    await log.command_log(message, "#RAN_FORWARD_MODE", f"{message.text}")
     user_id = message.from_user.id
-    command = message.text.lower().split()[1]
-    if command == "on":
+    parameter = message.text.split()
+    if len(parameter) != 2:
+        await message.reply("参数错误")
+        return
+    if parameter == "on":
         user_forwarding_enabled[user_id] = True
         await message.reply(f"消息转发已启用，您发送的所有消息都将转发到{WORK_CHAT}")
-    elif command == "off":
+    elif parameter == "off":
         try:
             del user_forwarding_enabled[user_id]
         except KeyError:
             pass
         await message.reply("消息转发已关闭")
 
-    await log.command_log(message, "#RAN_FORWARD_MODE", f"{message.text}")
 
-
-@Client.on_message(filters.private & ~filters.me & filters.text)
+@Client.on_message(filters.private & ~filters.me)
 async def forward_message(_, message: Message):
     await check_required(message, admin_required=True)
     user_id = message.from_user.id
