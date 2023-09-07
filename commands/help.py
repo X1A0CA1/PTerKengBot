@@ -4,15 +4,16 @@ import log
 from config import BOT_NAME, HELP_DELETE_TIME
 from utils import reply_and_delay_delete
 
-HELP_MESSAGE = f"""```**PTerKengBot HELP**
-/help@{BOT_NAME}           显示此帮助信息
-/ping@{BOT_NAME}           查看机器人存活状态
-/stats@{BOT_NAME}       *  查看站点统计信息
-/notice_me@{BOT_NAME}   *  获取坑位通知频道链接
-/flush@{BOT_NAME}       !  强制刷新数据
-/eval@{BOT_NAME}        !  ~~调教 bot 使用的命令~~
+HELP_MESSAGE = f"""```U
+**PTerKengBot HELP**
+/help@{BOT_NAME}               显示此帮助信息
+/ping@{BOT_NAME}               查看机器人存活状态
+/stats@{BOT_NAME}           *  查看站点统计信息
+/notice_me@{BOT_NAME}       *  获取坑位通知频道链接
+/flush@{BOT_NAME}           !  强制刷新数据
+/eval@{BOT_NAME}            !  ~~调教 bot 使用的命令~~
 
-/forward_mode on/off   !P  自动转发接下来私聊 BOT 的消息到猫站群
+/forward_mode on/off       !P  自动转发接下来私聊 BOT 的消息到猫站群
 
 带有 ! 的命令仅管理员(被认证的机器人管理员、非匿名群组管理员）可用，皮套人仅可在群组内使用，无法在私聊使用；
 带有 * 的命令仅可以在猫站群内使用。
