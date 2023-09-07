@@ -57,18 +57,19 @@ async def check_permission(message: Message) -> bool:
     from_user_id = message.from_user.id if message.from_user else None
     sender_chat_id = message.sender_chat.id if message.sender_chat else None
 
-    admin_lst = await bot.get_chat_members(WORK_CHAT, filter=ChatMembersFilter.ADMINISTRATORS)
+    if from_user_id in ADMINS:
+        return True
 
-    if message.chat.type is ChatType.PRIVATE:
-        if message.from_user.id in [user.id for user in admin_lst]:
-            return True
+    if sender_chat_id == WORK_CHAT:
+        return True
 
-    if from_user_id is not None:
-        user = await bot.get_chat_member(WORK_CHAT, from_user_id)
-        if user.custom_title:
-            return True
+    chat_admin_lst = []
+    async for m in bot.get_chat_members(WORK_CHAT, filter=ChatMembersFilter.ADMINISTRATORS):
+        if m.user.is_bot:
+            continue
+        chat_admin_lst.append(m.user.id)
 
-    if from_user_id in ADMINS or sender_chat_id == WORK_CHAT:
+    if from_user_id in chat_admin_lst:
         return True
 
     return False
