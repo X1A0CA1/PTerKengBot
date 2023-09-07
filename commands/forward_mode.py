@@ -45,6 +45,9 @@ async def reply_mode_command(_, message):
 @Client.on_message(filters.private & ~filters.me)
 async def forward_message(_, message: Message):
     await check_required(message, admin_required=True)
+    if message.text:
+        if message.text.startswith("/"):
+            return
     user_id = message.from_user.id
     if user_id in user_forwarding_enabled and user_forwarding_enabled[user_id]:
         await message.copy(chat_id=WORK_CHAT)
