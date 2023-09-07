@@ -4,6 +4,7 @@ from pyrogram.types import Message
 from scheduler import scheduler
 from config import WORK_CHAT, LOG_CHAT
 from utils import check_required
+from PterKengBot import bot
 import log
 
 user_forwarding_enabled = {}
@@ -14,7 +15,11 @@ async def clean_forwarding_dict():
     global user_forwarding_enabled
     for key in list(user_forwarding_enabled.keys()):
         del user_forwarding_enabled[key]
-        await Client.send_message(key, "消息转发已自动关闭")
+        await bot.send_message(chat_id=key, text="消息转发已自动关闭")
+        await log.info(
+            log_tag="#FORWARDING_CLEAN",
+            log_summaries=f"{key} 的消息转发已自动关闭"
+        )
 
 
 @Client.on_message(filters.command("forward_mode", prefixes="/"))
