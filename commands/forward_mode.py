@@ -31,10 +31,10 @@ async def reply_mode_command(_, message):
     if len(parameter) != 2:
         await message.reply("参数错误")
         return
-    if parameter == "on":
+    if parameter[1] == "on":
         user_forwarding_enabled[user_id] = True
         await message.reply(f"消息转发已启用，您发送的所有消息都将转发到{WORK_CHAT}")
-    elif parameter == "off":
+    elif parameter[1] == "off":
         try:
             del user_forwarding_enabled[user_id]
         except KeyError:
