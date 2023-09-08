@@ -85,17 +85,26 @@ async def reply_message(_, message):
     await log.command_log(message, "#RAN_REPLY_COMMAND", f"{message.text}")
     parameter = message.text.split()
     if len(parameter) < 1:
-        await message.reply("参数错误。用法： /delete <msg_link>")
+        await message.reply("参数错误。用法： /reply <msg_link> {text}")
         return
-    try:
-        msg = await bot.ask("请输入回复内容：")
-        msg_link = parameter[1]
-        target_msg = await get_message_from_link(msg_link)
-        await msg.copy(chat_id=target_msg.chat.id, reply_to_message_id=target_msg.id)
-        await msg.forward(chat_id=LOG_CHAT)
-        await message.reply(f"回复成功")
-    except Exception as e:
-        await message.reply(f"回复失败：{e}")
+    elif len(parameter) == 2:
+        try:
+            msg = await message.chat.ask("请在 5 分钟内输入回复内容：", timeout=300)
+            msg_link = parameter[1]
+            target_msg = await get_message_from_link(msg_link)
+            await msg.copy(chat_id=target_msg.chat.id, reply_to_message_id=target_msg.id)
+            await msg.forward(chat_id=LOG_CHAT)
+            await message.reply(f"回复成功")
+        except Exception as e:
+            await message.reply(f"回复失败：{e}")
+    else:
+        text = " ".join(parameter[2:])
+        target_msg = await get_message_from_link(parameter[1])
+        try:
+            await target_msg.reply(text=text)
+            await message.reply(f"回复成功")
+        except Exception as e:
+            await message.reply(f"回复失败：{e}")
 
 
 @Client.on_message(filters.command("delete", prefixes="/") & filters.private & ~filters.me, group=0)
