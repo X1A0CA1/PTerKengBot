@@ -84,14 +84,14 @@ async def reply_message(_, message):
     await check_required(message, admin_required=True)
     await log.command_log(message, "#RAN_REPLY_COMMAND", f"{message.text}")
     parameter = message.text.split()
+    msg_link = parameter[1]
+    target_msg = await get_message_from_link(msg_link)
     if len(parameter) < 1:
         await message.reply("参数错误。用法： /reply <msg_link> {text}")
         return
     elif len(parameter) == 2:
         try:
             msg = await message.chat.ask("请在 5 分钟内输入回复内容：", timeout=300)
-            msg_link = parameter[1]
-            target_msg = await get_message_from_link(msg_link)
             await msg.copy(chat_id=target_msg.chat.id, reply_to_message_id=target_msg.id)
             await msg.forward(chat_id=LOG_CHAT)
             await message.reply(f"回复成功")
@@ -99,7 +99,6 @@ async def reply_message(_, message):
             await message.reply(f"回复失败：{e}")
     else:
         text = " ".join(parameter[2:])
-        target_msg = await get_message_from_link(parameter[1])
         try:
             await target_msg.reply(text=text)
             await message.reply(f"回复成功")
