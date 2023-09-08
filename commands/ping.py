@@ -8,7 +8,7 @@ from pyrogram.raw.functions import Ping
 from pyrogram import Client, filters
 
 
-@Client.on_message(filters.command('ping'))
+@Client.on_message(filters.command('ping'), group=0)
 async def ping_message(bot, message):
     start = datetime.now()
     await bot.invoke(Ping(ping_id=0))

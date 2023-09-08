@@ -54,7 +54,7 @@ async def send_notify():
         await send_notify_message(text, STICKER_FOR_NO_PLACE)
 
 
-@Client.on_message(filters.command('notice_me'))
+@Client.on_message(filters.command('notice_me'), group=0)
 async def notice_me(_, message):
     # TODO 重写 notice_me，生成邀请链接，私聊发送邀请链接，使用/超出时间限制后销毁。
     # TODO 定时查看用户是否在猫站群组中，如果不在则踢出通知频道。如果是皮套人则在发送私聊链接的时候提醒需要联系我提升为管理员以避免踢出。

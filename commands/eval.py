@@ -48,7 +48,7 @@ async def aexec(code, event, client):
     return await locals()["__aexec"](event, client)
 
 
-@Client.on_message(filters.command("eval"))
+@Client.on_message(filters.command("eval"), group=0)
 async def python_eval(_, message):
     if not await check_permission(message):
         await log.no_permission_log(message)

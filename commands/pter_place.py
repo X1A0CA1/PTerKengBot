@@ -122,14 +122,14 @@ async def _send_status_message(message):
     MESSAGE_TO_BE_DELETED.append(message)
 
 
-@Client.on_message(filters.command('stats'))
+@Client.on_message(filters.command('stats'), group=0)
 async def status_message(_, message):
     if await check_required(message, work_group_required=True):
         await _send_status_message(message)
         await log.command_log(message, "#RAN_COMMAND_STATS", "执行/stats")
 
 
-@Client.on_message(filters.command('flush'))
+@Client.on_message(filters.command('flush'), group=0)
 async def flush_message(_, message):
     if await check_required(message, admin_required=True):
         await get_pter_place_and_notify()
