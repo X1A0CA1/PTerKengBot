@@ -180,3 +180,40 @@ async def check_required(message, admin_required=False, work_group_required=Fals
         return False
 
     return True
+
+
+async def get_message_from_link(link: str) -> Message | None:
+    link = link.replace('telegram.me', 't.me')
+    link = link.replace('telegram.dog', 't.me')
+    link = link.replace('https://', '')
+    link = link.replace('http://', '')
+    if link.find('t.me') == -1:
+        return None
+
+    chat_id = None
+    message_id: int = 0
+    # https://t.me/c/114514/1  # CHANNEL
+    # https://t.me/114514/1  # GROUP
+
+    if link.find('/c/') != -1:
+        my_strs = link.split('/c/')
+        if len(my_strs) < 2:
+            return None
+        my_strs = my_strs[1].split('/')
+        if len(my_strs) < 2:
+            return None
+        chat_id = int('-100' + my_strs[0])
+        message_id = int(my_strs[1])
+    else:
+        my_strs = link.split('/')
+        if len(my_strs) < 3:
+            return None
+        chat_id = my_strs[1]
+        if chat_id.isdigit():
+            chat_id = int('-100' + chat_id)
+        message_id = int(my_strs[2])
+
+    if not chat_id or not message_id:
+        return None
+
+    return await bot.get_messages(chat_id, message_id)

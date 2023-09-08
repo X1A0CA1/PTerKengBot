@@ -7,7 +7,7 @@ from pyrogram.types import Message
 
 from scheduler import scheduler
 from config import WORK_CHAT, LOG_CHAT, TIME_ZONE
-from utils import check_required
+from utils import check_required, get_message_from_link
 from PterKengBot import bot
 import log
 
@@ -69,13 +69,12 @@ async def edit_message(_, message):
     if len(parameter) < 2:
         await message.reply("参数错误。用法： /edit <msg_link> <text>")
         return
+    msg_link = parameter[1]
+    text = " ".join(parameter[2:])
+    target_msg = await get_message_from_link(msg_link)
     try:
-        msg_link = parameter[1]
-        text = " ".join(parameter[2:])
-        target_chat_id = msg_link.split("/")[-2]
-        target_message_id = msg_link.split("/")[-1]
-        await bot.edit_message_text(chat_id=target_chat_id, message_id=target_message_id, text=text)
-        await message.reply("消息已编辑")
+        await target_msg.edit(text=text)
+        await bot.send_reaction(message.chat.id, message.id, "👍")
     except Exception as e:
         await message.reply(f"编辑失败：{e}")
 
@@ -91,9 +90,8 @@ async def reply_message(_, message):
     try:
         msg = await message.ask("请输入回复内容：")
         msg_link = parameter[1]
-        target_chat_id = msg_link.split("/")[-2]
-        target_message_id = msg_link.split("/")[-1]
-        await msg.copy(chat_id=target_chat_id, reply_to_message_id=target_message_id)
+        target_msg = await get_message_from_link(msg_link)
+        await msg.copy(chat_id=target_msg.chat.id, reply_to_message_id=target_msg.id)
         await msg.forward(chat_id=LOG_CHAT)
         await bot.send_reaction(message.chat.id, message.id, "👍")
     except Exception as e:
@@ -110,9 +108,8 @@ async def delete_message(_, message):
         return
     try:
         msg_link = parameter[1]
-        target_chat_id = msg_link.split("/")[-2]
-        target_message_id = msg_link.split("/")[-1]
-        await bot.delete_messages(chat_id=target_chat_id, message_ids=target_message_id)
+        target_msg = await get_message_from_link(msg_link)
+        await target_msg.delete()
         await bot.send_reaction(message.chat.id, message.id, "👍")
     except Exception as e:
         await message.reply(f"删除失败：{e}")
