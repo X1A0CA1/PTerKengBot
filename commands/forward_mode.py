@@ -83,7 +83,7 @@ async def edit_message(_, message):
 @Client.on_message(filters.command("reply", prefixes="/") & filters.private & ~filters.me, group=0)
 async def reply_message(_, message):
     await check_required(message, admin_required=True)
-    await log.command_log(message, "#RAN_EDIT_COMMAND", f"{message.text}")
+    await log.command_log(message, "#RAN_REPLY_COMMAND", f"{message.text}")
     parameter = message.text.split()
     if parameter < 1:
         await message.reply("参数错误。用法： /delete <msg_link>")
@@ -94,7 +94,8 @@ async def reply_message(_, message):
         target_chat_id = msg_link.split("/")[-2]
         target_message_id = msg_link.split("/")[-1]
         await msg.copy(chat_id=target_chat_id, reply_to_message_id=target_message_id)
-        await msg.reply("已回复")
+        await msg.forward(chat_id=LOG_CHAT)
+        await bot.send_reaction(message.chat.id, message.id, "👍")
     except Exception as e:
         await message.reply(f"回复失败：{e}")
 
@@ -102,7 +103,7 @@ async def reply_message(_, message):
 @Client.on_message(filters.command("delete", prefixes="/") & filters.private & ~filters.me, group=0)
 async def delete_message(_, message):
     await check_required(message, admin_required=True)
-    await log.command_log(message, "#RAN_EDIT_COMMAND", f"{message.text}")
+    await log.command_log(message, "#RAN_DELETE_COMMAND", f"{message.text}")
     parameter = message.text.split()
     if parameter < 1:
         await message.reply("参数错误。用法： /delete <msg_link>")
@@ -112,7 +113,7 @@ async def delete_message(_, message):
         target_chat_id = msg_link.split("/")[-2]
         target_message_id = msg_link.split("/")[-1]
         await bot.delete_messages(chat_id=target_chat_id, message_ids=target_message_id)
-        await message.reply("已删除")
+        await bot.send_reaction(message.chat.id, message.id, "👍")
     except Exception as e:
         await message.reply(f"删除失败：{e}")
 
