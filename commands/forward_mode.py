@@ -66,7 +66,7 @@ async def edit_message(_, message):
     await check_required(message, admin_required=True)
     await log.command_log(message, "#RAN_EDIT_COMMAND", f"{message.text}")
     parameter = message.text.split()
-    if parameter < 2:
+    if len(parameter) < 2:
         await message.reply("参数错误。用法： /edit <msg_link> <text>")
         return
     try:
@@ -85,7 +85,7 @@ async def reply_message(_, message):
     await check_required(message, admin_required=True)
     await log.command_log(message, "#RAN_REPLY_COMMAND", f"{message.text}")
     parameter = message.text.split()
-    if parameter < 1:
+    if len(parameter) < 1:
         await message.reply("参数错误。用法： /delete <msg_link>")
         return
     try:
@@ -105,7 +105,7 @@ async def delete_message(_, message):
     await check_required(message, admin_required=True)
     await log.command_log(message, "#RAN_DELETE_COMMAND", f"{message.text}")
     parameter = message.text.split()
-    if parameter < 1:
+    if len(parameter) < 1:
         await message.reply("参数错误。用法： /delete <msg_link>")
         return
     try:
