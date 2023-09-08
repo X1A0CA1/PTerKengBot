@@ -1,9 +1,10 @@
-from config import BOT_NAME, BOT_TOKEN, API_ID, API_HASH, LOG_CHAT
+import pyromod
 
 from pyrogram import Client, idle
 from pyrogram.types import BotCommand
 
 from scheduler import scheduler
+from config import BOT_NAME, BOT_TOKEN, API_ID, API_HASH, LOG_CHAT
 
 
 bot = Client(
