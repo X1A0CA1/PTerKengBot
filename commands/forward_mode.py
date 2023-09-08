@@ -88,7 +88,7 @@ async def reply_message(_, message):
         await message.reply("参数错误。用法： /delete <msg_link>")
         return
     try:
-        msg = await message.ask("请输入回复内容：")
+        msg = await bot.ask("请输入回复内容：")
         msg_link = parameter[1]
         target_msg = await get_message_from_link(msg_link)
         await msg.copy(chat_id=target_msg.chat.id, reply_to_message_id=target_msg.id)
