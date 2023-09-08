@@ -182,13 +182,13 @@ async def check_required(message, admin_required=False, work_group_required=Fals
     return True
 
 
-async def get_message_from_link(link: str) -> Message | None:
+async def get_ids_from_link(link: str) -> (int, int):
     link = link.replace('telegram.me', 't.me')
     link = link.replace('telegram.dog', 't.me')
     link = link.replace('https://', '')
     link = link.replace('http://', '')
     if link.find('t.me') == -1:
-        return None
+        return None, None
 
     chat_id = None
     message_id: int = 0
@@ -198,22 +198,22 @@ async def get_message_from_link(link: str) -> Message | None:
     if link.find('/c/') != -1:
         my_strs = link.split('/c/')
         if len(my_strs) < 2:
-            return None
+            return None, None
         my_strs = my_strs[1].split('/')
         if len(my_strs) < 2:
-            return None
+            return None, None
         chat_id = int('-100' + my_strs[0])
         message_id = int(my_strs[1])
     else:
         my_strs = link.split('/')
         if len(my_strs) < 3:
-            return None
+            return None, None
         chat_id = my_strs[1]
         if chat_id.isdigit():
-            chat_id = int('-100' + chat_id)
+            chat_id = int(f'-100{chat_id}')
         message_id = int(my_strs[2])
 
     if not chat_id or not message_id:
-        return None
+        return None, None
 
-    return await bot.get_messages(chat_id, message_id)
+    return chat_id, message_id

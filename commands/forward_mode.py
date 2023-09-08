@@ -7,7 +7,7 @@ from pyrogram.types import Message
 
 from scheduler import scheduler
 from config import WORK_CHAT, LOG_CHAT, TIME_ZONE
-from utils import check_required, get_message_from_link
+from utils import check_required, get_ids_from_link
 from PterKengBot import bot
 import log
 
@@ -71,9 +71,9 @@ async def edit_message(_, message):
         return
     msg_link = parameter[1]
     text = " ".join(parameter[2:])
-    target_msg = await get_message_from_link(msg_link)
+    target_chat_id, target_msg_id = await get_ids_from_link(msg_link)
     try:
-        await target_msg.edit(text=text)
+        await bot.edit_message_text(chat_id=target_chat_id, message_id=target_msg_id, text=text)
         await message.reply(f"编辑成功")
     except Exception as e:
         await message.reply(f"编辑失败：{e}")
@@ -85,14 +85,14 @@ async def reply_message(_, message):
     await log.command_log(message, "#RAN_REPLY_COMMAND", f"{message.text}")
     parameter = message.text.split()
     msg_link = parameter[1]
-    target_msg = await get_message_from_link(msg_link)
+    target_chat_id, target_msg_id = await get_ids_from_link(msg_link)
     if len(parameter) < 1:
         await message.reply("参数错误。用法： /reply <msg_link> {text}")
         return
     elif len(parameter) == 2:
         try:
             msg = await message.chat.ask("请在 5 分钟内输入回复内容：", timeout=300)
-            await msg.copy(chat_id=target_msg.chat.id, reply_to_message_id=target_msg.id)
+            await msg.copy(chat_id=target_chat_id, reply_to_message_id=target_msg_id)
             await msg.forward(chat_id=LOG_CHAT)
             await message.reply(f"回复成功")
         except Exception as e:
@@ -100,7 +100,7 @@ async def reply_message(_, message):
     else:
         text = " ".join(parameter[2:])
         try:
-            await target_msg.reply(text=text)
+            await bot.send_message(chat_id=target_chat_id, text=text, reply_to_message_id=target_msg_id)
             await message.reply(f"回复成功")
         except Exception as e:
             await message.reply(f"回复失败：{e}")
@@ -116,8 +116,8 @@ async def delete_message(_, message):
         return
     try:
         msg_link = parameter[1]
-        target_msg = await get_message_from_link(msg_link)
-        await target_msg.delete()
+        target_chat_id, target_msg_id = await get_ids_from_link(msg_link)
+        await bot.delete_messages(chat_id=target_chat_id, message_ids=target_msg_id)
         await message.reply(f"删除成功")
     except Exception as e:
         await message.reply(f"删除失败：{e}")
