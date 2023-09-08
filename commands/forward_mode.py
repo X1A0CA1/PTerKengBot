@@ -74,7 +74,7 @@ async def edit_message(_, message):
     target_msg = await get_message_from_link(msg_link)
     try:
         await target_msg.edit(text=text)
-        await bot.send_reaction(message.chat.id, message.id, "👍")
+        await message.reply(f"编辑成功")
     except Exception as e:
         await message.reply(f"编辑失败：{e}")
 
@@ -93,7 +93,7 @@ async def reply_message(_, message):
         target_msg = await get_message_from_link(msg_link)
         await msg.copy(chat_id=target_msg.chat.id, reply_to_message_id=target_msg.id)
         await msg.forward(chat_id=LOG_CHAT)
-        await bot.send_reaction(message.chat.id, message.id, "👍")
+        await message.reply(f"回复成功")
     except Exception as e:
         await message.reply(f"回复失败：{e}")
 
@@ -110,7 +110,7 @@ async def delete_message(_, message):
         msg_link = parameter[1]
         target_msg = await get_message_from_link(msg_link)
         await target_msg.delete()
-        await bot.send_reaction(message.chat.id, message.id, "👍")
+        await message.reply(f"删除成功")
     except Exception as e:
         await message.reply(f"删除失败：{e}")
 
