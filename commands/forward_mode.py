@@ -130,4 +130,4 @@ async def forward_message(_, message: Message):
     if user_id in user_forwarding_enabled and user_forwarding_enabled[user_id]:
         await message.copy(chat_id=WORK_CHAT)
         await message.forward(chat_id=LOG_CHAT)
-        await bot.send_reaction(message.chat.id, message.id, "👍")
+        await message.reply("消息已转发")
