@@ -83,6 +83,14 @@ def _contains_only_special_whitespace(string: str) -> bool:
     return all(char in chars for char in string)
 
 
+async def get_user_fullname_from_user_id(user: int) -> str:
+    user = await bot.get_users(user)
+    full_name = user.first_name
+    if user.last_name:
+        full_name += f" {user.last_name}"
+    return full_name
+
+
 async def get_sender_user_fullname_from_message(message: Message) -> str:
     full_name = None
     user = message.from_user

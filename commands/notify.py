@@ -1,10 +1,15 @@
+from datetime import datetime, timedelta
+
 from pyrogram import Client, filters
+from pyrogram.errors import UserNotParticipant
+from pyrogram.enums import ChatMemberStatus
 
 import commands.pter_place
 import log
-from config import LOG_CHAT, WORK_CHAT, NOTIFY_CHAT, NOTIFY_CHAT_INVITE_LINK, INVITE_LINK_DELETE_TIME
+from config import LOG_CHAT, WORK_CHAT, NOTIFY_CHAT, NOTIFY_CHAT_INVITE_LINK, INVITE_LINK_DELETE_TIME, ADMINS
 from PterKengBot import bot
-from utils import reply_and_delay_delete, check_required
+from utils import reply_and_delay_delete, check_required, get_user_fullname_from_user_id
+from scheduler import scheduler
 
 STICKER_FOR_HAS_PLACE = "BQACAgUAAx0ETaitjQABDrVbZC7-CyRnP9bNWyL6uyQTsEZYmhUAAgIIAAKBgXlVI9gBrugVVmAeBA"
 STICKER_FOR_NO_PLACE = "BQACAgUAAx0ETaitjQABDrVcZC7-DHoDQxTig8mGKF4tXTtDjZUAAgMIAAKBgXlVIUkm6W3k8YseBA"
@@ -57,7 +62,43 @@ async def send_notify():
 @Client.on_message(filters.command('notice_me'), group=0)
 async def notice_me(_, message):
     # TODO 重写 notice_me，生成邀请链接，私聊发送邀请链接，使用/超出时间限制后销毁。
-    # TODO 定时查看用户是否在猫站群组中，如果不在则踢出通知频道。如果是皮套人则在发送私聊链接的时候提醒需要联系我提升为管理员以避免踢出。
     if await check_required(message, work_group_required=True):
         await reply_and_delay_delete(message, f"请加入通知频道~ \n{NOTIFY_CHAT_INVITE_LINK}", INVITE_LINK_DELETE_TIME)
         await log.command_log(message, "#RAN_COMMAND_NOTICE_ME", "执行/notice_me")
+
+
+async def kick_users_if_not_in_work_group():
+    kicked_users = []
+
+    async for member in bot.get_chat_members(NOTIFY_CHAT):
+        if member.status is not ChatMemberStatus.MEMBER:
+            continue
+        if member.user.id in ADMINS:
+            continue
+        try:
+            await bot.get_chat_member(WORK_CHAT, member.user.id)
+        except UserNotParticipant:
+            await bot.ban_chat_member(NOTIFY_CHAT, member.user.id, datetime.now() + timedelta(minutes=5))
+            kicked_users.append(member.user)
+    return kicked_users
+
+
+async def scheduled_kick_users():
+    kicked_users = await kick_users_if_not_in_work_group()
+    if not kicked_users:
+        return
+
+    more_log_text = "踢出的用户：\n"
+    for user in kicked_users:
+        more_log_text += f"{user.id} | {await get_user_fullname_from_user_id(user.id)}\n"
+
+    await log.info(
+        log_tag="#KICK_USERS_IF_NOT_IN_WORK_GROUP",
+        log_summaries=f"有 {len(kicked_users)} 位用户不在猫站群组中，已经踢出",
+        more_log_text=more_log_text
+    )
+
+
+@scheduler.scheduled_job("interval", hours=6)
+async def scheduled_kick_users_job():
+    await scheduled_kick_users()
