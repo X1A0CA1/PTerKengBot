@@ -74,7 +74,7 @@ async def _get_pter_status():
             return
 
 
-@scheduler.scheduled_job("interval", seconds=30)
+@scheduler.scheduled_job("interval", seconds=15)
 async def get_pter_place_and_notify():
     await _get_pter_status()
     await notify.send_notify()
