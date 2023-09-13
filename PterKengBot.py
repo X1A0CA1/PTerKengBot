@@ -2,6 +2,7 @@ import pyromod
 
 from pyrogram import Client, idle
 from pyrogram.types import BotCommand
+from pyrogram.enums import ParseMode
 
 from scheduler import scheduler
 from config import BOT_NAME, BOT_TOKEN, API_ID, API_HASH, LOG_CHAT
@@ -27,6 +28,7 @@ async def start_bot():
         BotCommand("notice_me", "坑位变化通知你"),
         BotCommand("forward_mode", "设置消息转发（仅管理可用）"),
     ])
+    await bot.set_parse_mode(ParseMode.MARKDOWN)
     print("Bot Started!")
     await bot.send_message(LOG_CHAT, "Bot Started!")
     await idle()
