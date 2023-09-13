@@ -78,7 +78,7 @@ async def kick_users_if_not_in_work_group():
         try:
             await bot.get_chat_member(WORK_CHAT, member.user.id)
         except UserNotParticipant:
-            await bot.ban_chat_member(NOTIFY_CHAT, member.user.id, datetime.now() + timedelta(minutes=5))
+            await bot.ban_chat_member(NOTIFY_CHAT, member.user.id)
             kicked_users.append(member.user)
     return kicked_users
 
