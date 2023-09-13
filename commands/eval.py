@@ -41,6 +41,7 @@ async def aexec(code, event, client):
                         + "\n reply = message.reply_to_message if message else None"
                 )
                 + "\n chat = e.chat if e else None"
+                + "\n from PterKengBot import bot"
         )
         + "".join(f"\n {x}" for x in code.split("\n"))
     )
