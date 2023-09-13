@@ -1,5 +1,3 @@
-from datetime import datetime, timedelta
-
 from pyrogram import Client, filters
 from pyrogram.errors import UserNotParticipant
 from pyrogram.enums import ChatMemberStatus
