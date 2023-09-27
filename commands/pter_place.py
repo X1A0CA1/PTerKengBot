@@ -122,7 +122,7 @@ async def _send_status_message(message):
     MESSAGE_TO_BE_DELETED.append(message)
 
 
-@Client.on_message(filters.command('stats'), group=0)
+@Client.on_message(filters.command(['stats', 'keng']), group=0)
 async def status_message(_, message):
     if await check_required(message, work_group_required=True):
         await _send_status_message(message)

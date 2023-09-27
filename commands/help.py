@@ -10,6 +10,7 @@ HELP_MESSAGE = f"""
 /help@{BOT_NAME}               显示此帮助信息
 /ping@{BOT_NAME}               查看机器人存活状态
 /stats@{BOT_NAME}           *  查看站点统计信息
+/keng@{BOT_NAME}            *  等价于 stats
 /notice_me@{BOT_NAME}       *  获取坑位通知频道链接
 /flush@{BOT_NAME}           !  强制刷新数据
 /eval@{BOT_NAME}            !  ~~调教 bot 使用的命令~~
