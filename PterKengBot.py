@@ -23,7 +23,7 @@ async def start_bot():
     await bot.set_bot_commands([
         BotCommand("help", "显示帮助信息"),
         BotCommand("stats", "查看站点统计信息"),
-        BotCommand("keng", "查看站点统计信息"),
+        BotCommand("keng", "stats 的别名"),
         BotCommand("ping", "小菜只因器人还活着吗？"),
         BotCommand("flush", "强制刷新数据（仅管理可用）"),
         BotCommand("notice_me", "坑位变化通知你"),
